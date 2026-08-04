@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../core/router/app_router.dart';
 import '../cubit/login_cubit.dart';
 import '../cubit/login_state.dart';
 
@@ -45,9 +45,6 @@ class _LoginViewState extends State<_LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // We initialize ScreenUtil here if it's the first page, otherwise it should be in main.dart
-    // Assuming main.dart will have ScreenUtilInit wrapping the app.
-
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
@@ -181,7 +178,7 @@ class _LoginViewState extends State<_LoginView> {
                             },
                           ),
 
-                          const Spacer(),
+                          Spacer(),
                           // Sign Up Section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

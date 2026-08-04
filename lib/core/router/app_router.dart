@@ -5,6 +5,7 @@ import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/otp_verification_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
+import '../../features/home/presentation/pages/home_page.dart';
 
 class AppRouter {
   // Route Constants
@@ -14,6 +15,7 @@ class AppRouter {
   static const String forgotPassword = '/forgot-password';
   static const String otpVerification = '/otp-verification';
   static const String createNewPassword = '/create-new-password';
+  static const String home = '/home';
 
   static final router = GoRouter(
     initialLocation: splash,
@@ -50,6 +52,11 @@ class AppRouter {
         path: createNewPassword,
         name: 'create-new-password',
         builder: (context, state) => const CreateNewPasswordPage(),
+      ),
+      GoRoute(
+        path: home,
+        name: 'home',
+        builder: (context, state) => const HomePage(),
       ),
       // Add home route here when ready
     ],

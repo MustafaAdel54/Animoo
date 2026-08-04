@@ -1,10 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/utils/validators.dart';
@@ -45,19 +47,30 @@ class _SignUpViewState extends State<_SignUpView> {
   @override
   void initState() {
     super.initState();
-    _firstNameController.addListener(() =>
-        context.read<SignUpCubit>().firstNameChanged(_firstNameController.text));
-    _lastNameController.addListener(() =>
-        context.read<SignUpCubit>().lastNameChanged(_lastNameController.text));
-    _emailController.addListener(() =>
-        context.read<SignUpCubit>().emailChanged(_emailController.text));
-    _phoneController.addListener(() =>
-        context.read<SignUpCubit>().phoneChanged(_phoneController.text));
-    _passwordController.addListener(() =>
-        context.read<SignUpCubit>().passwordChanged(_passwordController.text));
-    _confirmPasswordController.addListener(() => context
-        .read<SignUpCubit>()
-        .confirmPasswordChanged(_confirmPasswordController.text));
+    _firstNameController.addListener(
+      () => context.read<SignUpCubit>().firstNameChanged(
+        _firstNameController.text,
+      ),
+    );
+    _lastNameController.addListener(
+      () =>
+          context.read<SignUpCubit>().lastNameChanged(_lastNameController.text),
+    );
+    _emailController.addListener(
+      () => context.read<SignUpCubit>().emailChanged(_emailController.text),
+    );
+    _phoneController.addListener(
+      () => context.read<SignUpCubit>().phoneChanged(_phoneController.text),
+    );
+    _passwordController.addListener(
+      () =>
+          context.read<SignUpCubit>().passwordChanged(_passwordController.text),
+    );
+    _confirmPasswordController.addListener(
+      () => context.read<SignUpCubit>().confirmPasswordChanged(
+        _confirmPasswordController.text,
+      ),
+    );
   }
 
   @override
@@ -82,15 +95,19 @@ class _SignUpViewState extends State<_SignUpView> {
       builder: (_) => _ImageSourceSheet(
         onGallery: () async {
           Navigator.pop(context);
-          final picked =
-              await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-          if (picked != null) cubit.profileImageChanged(File(picked.path));
+          final picked = await picker.pickImage(
+            source: ImageSource.gallery,
+            imageQuality: 80,
+          );
+          if (picked != null) cubit.imageChanged(File(picked.path));
         },
         onCamera: () async {
           Navigator.pop(context);
-          final picked =
-              await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
-          if (picked != null) cubit.profileImageChanged(File(picked.path));
+          final picked = await picker.pickImage(
+            source: ImageSource.camera,
+            imageQuality: 80,
+          );
+          if (picked != null) cubit.imageChanged(File(picked.path));
         },
       ),
     );
@@ -110,9 +127,12 @@ class _SignUpViewState extends State<_SignUpView> {
                 if (state.status == SignUpStatus.success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Account created successfully!')),
+                      content: Text('Account created! Please verify your email.'),
+                    ),
                   );
-                  // TODO: Navigate to home screen
+                  context.go(
+                    '${AppRouter.otpVerification}?email=${Uri.encodeComponent(state.email)}',
+                  );
                 } else if (state.status == SignUpStatus.failure &&
                     state.errorMessage != null) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -129,102 +149,98 @@ class _SignUpViewState extends State<_SignUpView> {
                   children: [
                     SizedBox(height: 20.h),
 
-                          // ── Logo ──────────────────────────────────────
-                          Center(
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                              width: 72.w,
-                              height: 93.h,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                width: 72.w,
-                                height: 72.h,
-                                color: Colors.grey[300],
-                                child: const Icon(Icons.image,
-                                    color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
+                    // ── Logo ──────────────────────────────────────
+                    Center(
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 72.w,
+                        height: 93.h,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 72.w,
+                          height: 72.h,
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.image, color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
 
-                          // ── Title ─────────────────────────────────────
-                          Center(
-                            child: Text('Sign Up', style: AppFonts.loginTitle),
-                          ),
-                          SizedBox(height: 8.h),
+                    // ── Title ─────────────────────────────────────
+                    Center(child: Text('Sign Up', style: AppFonts.loginTitle)),
+                    SizedBox(height: 8.h),
 
-                          // ── First Name ────────────────────────────────
-                          CustomTextField(
-                            label: 'First Name',
-                            hint: 'Enter your First Name',
-                            controller: _firstNameController,
-                            validator: AppValidators.validateName,
-                          ),
-                          SizedBox(height: 16.h),
+                    // ── First Name ────────────────────────────────
+                    CustomTextField(
+                      label: 'First Name',
+                      hint: 'Enter your First Name',
+                      controller: _firstNameController,
+                      validator: AppValidators.validateName,
+                    ),
+                    SizedBox(height: 16.h),
 
-                          // ── Last Name ─────────────────────────────────
-                          CustomTextField(
-                            label: 'Last Name',
-                            hint: 'Enter your Last Name',
-                            controller: _lastNameController,
-                            validator: AppValidators.validateName,
-                          ),
-                          SizedBox(height: 16.h),
+                    // ── Last Name ─────────────────────────────────
+                    CustomTextField(
+                      label: 'Last Name',
+                      hint: 'Enter your Last Name',
+                      controller: _lastNameController,
+                      validator: AppValidators.validateName,
+                    ),
+                    SizedBox(height: 16.h),
 
-                          // ── Email ─────────────────────────────────────
-                          CustomTextField(
-                            label: 'Email',
-                            hint: 'Enter your email address',
-                            controller: _emailController,
-                            validator: AppValidators.validateEmail,
-                          ),
-                          SizedBox(height: 16.h),
+                    // ── Email ─────────────────────────────────────
+                    CustomTextField(
+                      label: 'Email',
+                      hint: 'Enter your email address',
+                      controller: _emailController,
+                      validator: AppValidators.validateEmail,
+                    ),
+                    SizedBox(height: 16.h),
 
-                          // ── Phone ─────────────────────────────────────
-                          CustomTextField(
-                            label: 'Phone',
-                            hint: 'Enter your Phone',
-                            controller: _phoneController,
-                            validator: AppValidators.validatePhone,
-                          ),
-                          SizedBox(height: 16.h),
+                    // ── Phone ─────────────────────────────────────
+                    CustomTextField(
+                      label: 'Phone',
+                      hint: 'Enter your Phone',
+                      controller: _phoneController,
+                      validator: AppValidators.validatePhone,
+                    ),
+                    SizedBox(height: 16.h),
 
-                          // ── Password ──────────────────────────────────
-                          CustomTextField(
-                            label: 'Password',
-                            hint: '********',
-                            controller: _passwordController,
-                            isPassword: true,
-                            validator: AppValidators.validateStrongPassword,
-                          ),
-                          SizedBox(height: 6.h),
+                    // ── Password ──────────────────────────────────
+                    CustomTextField(
+                      label: 'Password',
+                      hint: '********',
+                      controller: _passwordController,
+                      isPassword: true,
+                      validator: AppValidators.validateStrongPassword,
+                    ),
+                    SizedBox(height: 6.h),
 
-                          // ── Live Password Checklist ───────────────────
-                          _PasswordChecklist(state: state),
-                          SizedBox(height: 16.h),
+                    // ── Live Password Checklist ───────────────────
+                    _PasswordChecklist(state: state),
+                    SizedBox(height: 16.h),
 
-                          // ── Confirm Password ──────────────────────────
-                          CustomTextField(
-                            label: 'Confirm Password',
-                            hint: '********',
-                            controller: _confirmPasswordController,
-                            isPassword: true,
-                            validator: AppValidators.confirmPasswordValidator(
-                              _passwordController.text,
-                            ),
-                          ),
-                          SizedBox(height: 16.h),
+                    // ── Confirm Password ──────────────────────────
+                    CustomTextField(
+                      label: 'Confirm Password',
+                      hint: '********',
+                      controller: _confirmPasswordController,
+                      isPassword: true,
+                      validator: AppValidators.confirmPasswordValidator(
+                        _passwordController.text,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
 
-                          // ── Profile Image Picker ──────────────────────
-                          Text(
-                            'Upload Image For Your Profile',
-                            style: AppFonts.inputLabel,
-                          ),
-                          SizedBox(height: 8.h),
-                          _ProfileImagePicker(
-                            pickedImage: state.profileImage,
-                            onTap: _showImageSourceSheet,
-                          ),
+                    // ── Profile Image Picker ──────────────────────
+                    Text(
+                      'Upload Image For Your Profile',
+                      style: AppFonts.inputLabel,
+                    ),
+                    SizedBox(height: 8.h),
+                    _ProfileImagePicker(
+                      pickedImage: state.image,
+                      onTap: _showImageSourceSheet,
+                    ),
                     SizedBox(height: 24.h),
 
                     // ── Sign Up Button ────────────────────────────
@@ -250,7 +266,9 @@ class _SignUpViewState extends State<_SignUpView> {
                               color: const Color(0xFF828282),
                             ),
                             children: [
-                              const TextSpan(text: 'Have an account already?  '),
+                              const TextSpan(
+                                text: 'Have an account already?  ',
+                              ),
                               TextSpan(
                                 text: 'Log in',
                                 style: AppFonts.bodyMedium.copyWith(
@@ -280,10 +298,7 @@ class _ImageSourceSheet extends StatelessWidget {
   final VoidCallback onGallery;
   final VoidCallback onCamera;
 
-  const _ImageSourceSheet({
-    required this.onGallery,
-    required this.onCamera,
-  });
+  const _ImageSourceSheet({required this.onGallery, required this.onCamera});
 
   @override
   Widget build(BuildContext context) {
@@ -388,10 +403,7 @@ class _PasswordChecklist extends StatelessWidget {
           label: 'One special character.',
           isPassing: state.hasSpecialChar,
         ),
-        PasswordRuleRow(
-          label: 'One number.',
-          isPassing: state.hasNumber,
-        ),
+        PasswordRuleRow(label: 'One number.', isPassing: state.hasNumber),
       ],
     );
   }
@@ -402,10 +414,7 @@ class _ProfileImagePicker extends StatelessWidget {
   final File? pickedImage;
   final VoidCallback onTap;
 
-  const _ProfileImagePicker({
-    required this.pickedImage,
-    required this.onTap,
-  });
+  const _ProfileImagePicker({required this.pickedImage, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -445,8 +454,11 @@ class _ProfileImagePicker extends StatelessWidget {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.image_outlined,
-                      color: AppColors.primaryAccent, size: 28.sp),
+                  Icon(
+                    Icons.image_outlined,
+                    color: AppColors.primaryAccent,
+                    size: 28.sp,
+                  ),
                   SizedBox(height: 16.h),
                   Text(
                     'Select file',

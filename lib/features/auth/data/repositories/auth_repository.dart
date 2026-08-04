@@ -1,30 +1,75 @@
 import 'dart:io';
 
+import 'package:animoo/core/error/server_exception.dart';
+import 'package:animoo/core/service/get_it_service.dart';
+import 'package:animoo/core/utils/extensions.dart';
+import 'package:animoo/data/auth_api.dart';
+import 'package:animoo/models/auth/sign_up_request_model.dart';
+
 class AuthRepository {
   AuthRepository();
 
-  /// Mock method: Creates a new user with email/password, uploads their profile photo,
-  /// and stores all sign-up data. Simulated with a delay.
+  /// Creates a new user with email/password, uploads their profile photo,
+  /// and stores all sign-up data.
   Future<void> signUp({
     required String firstName,
     required String lastName,
     required String email,
     required String phone,
     required String password,
-    File? profileImage,
+    required File image,
   }) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
-    
-    // In a real backend implementation, you would throw an exception if the email already exists,
-    // or return the created user token.
+    final result = await AuthApi().signup(
+      SignUpRequestModel(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        password: password,
+        image: image,
+      ),
+    );
+
+    // Fold: throw ServerException on failure so the cubit reads .message directly.
+    result.fold(
+      (failure) => throw ServerException(
+        message: failure.error.isNotEmpty
+            ? failure.error.join('\n')
+            : 'Sign up failed.',
+        data: {},
+      ),
+      (_) {}, // success — do nothing, let the cubit emit success
+    );
+  }
+
+  /// Verifies the OTP code sent to the user's email after sign-up.
+  /// On success, stores access & refresh tokens securely.
+  Future<void> verifyCode({required String email, required String code}) async {
+    final result = await AuthApi().verification(email: email, code: code);
+
+    result.fold(
+      (failure) => throw ServerException(
+        message: failure.error.isNotEmpty
+            ? failure.error.join('\n')
+            : 'Verification failed.',
+        data: {},
+      ),
+      (_) {}, // success — token storage handled below
+    );
+
+    // Store tokens securely (outside fold to properly await)
+    if (result.isRight()) {
+      final response = result.getOrElse(() => throw Exception('unreachable'));
+      final tokenStorage = getIt.tokenStorageService;
+      await tokenStorage.saveTokens(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      );
+    }
   }
 
   /// Mock method: Signs in with email and password. Simulated with a delay.
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     // Simulate network delay
     await Future.delayed(const Duration(seconds: 2));
   }
@@ -39,9 +84,9 @@ class AuthRepository {
   Future<bool> isEmailRegistered(String email) async {
     // Simulate network delay
     await Future.delayed(const Duration(seconds: 1));
-    // Always returning true for the mock to allow the reset password flow to proceed, 
+    // Always returning true for the mock to allow the reset password flow to proceed,
     // or you could add specific logic to toggle this for testing.
-    return true; 
+    return true;
   }
 
   /// Mock method: Signs out the current user.

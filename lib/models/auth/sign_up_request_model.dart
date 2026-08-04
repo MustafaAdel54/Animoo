@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+
 class SignUpRequestModel {
   final String firstName;
   final String lastName;
   final String email;
-  final String phoneNumber;
+  final String phone;
   final String password;
   final File image;
 
@@ -12,19 +14,22 @@ class SignUpRequestModel {
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.phoneNumber,
+    required this.phone,
     required this.password,
     required this.image,
   });
 
-  Map<String, dynamic> tojson() {
-    return {
+  Future<FormData> toFormData() async {
+    return FormData.fromMap({
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
-      'phoneNumber': phoneNumber,
+      'phone': phone,
       'password': password,
-      'image': image,
-    };
+      'image': await MultipartFile.fromFile(
+        image.path,
+        filename: image.path.split('/').last,
+      ),
+    });
   }
 }
