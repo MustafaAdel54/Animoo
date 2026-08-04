@@ -24,10 +24,10 @@ class AuthApi {
       return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
     } catch (e) {
       return Left(
-        FailureModel.fromJson({
-          'statusCode': '1000',
-          'error': [e.toString()],
-        }),
+        FailureModel(
+          statusCode: 1000,
+          error: [e.toString()],
+        ),
       );
     }
   }
@@ -47,10 +47,32 @@ class AuthApi {
       return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
     } catch (e) {
       return Left(
-        FailureModel.fromJson({
-          'statusCode': '1000',
-          'error': [e.toString()],
-        }),
+        FailureModel(
+          statusCode: 1000,
+          error: [e.toString()],
+        ),
+      );
+    }
+  }
+
+  Future<Either<FailureModel, AuthResponseModel>> resendVerificationCode({
+    required String email,
+  }) async {
+    try {
+      DioServices dioServices = getIt.dioService;
+      var res = await dioServices.post(
+        path: ApiConsts.newVerificationCodeEndPoint,
+        body: {'email': email},
+      );
+      return Right(AuthResponseModel.fromJson(res));
+    } on ServerException catch (e) {
+      return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
+    } catch (e) {
+      return Left(
+        FailureModel(
+          statusCode: 1000,
+          error: [e.toString()],
+        ),
       );
     }
   }

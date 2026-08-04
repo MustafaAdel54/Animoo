@@ -15,4 +15,7 @@ final class _ApiConsts {
   static const String signUpEndPoint = '/api/signup';
 
   static const String verificationCodeEndPoint = '/api/verfication_code';
+
+  static const String newVerificationCodeEndPoint =
+      '/api/create_new_verfication_code';
 }

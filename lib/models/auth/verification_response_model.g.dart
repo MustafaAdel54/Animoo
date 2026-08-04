@@ -9,10 +9,10 @@ part of 'verification_response_model.dart';
 VerificationResponseModel _$VerificationResponseModelFromJson(
   Map<String, dynamic> json,
 ) => VerificationResponseModel(
-  statusCode: (json['statusCode'] as num).toInt(),
-  message: json['message'] as String,
-  accessToken: json['access_token'] as String,
-  refreshToken: json['refresh_token'] as String,
+  statusCode: parseToInt(json['statusCode']),
+  message: parseString(json['message']),
+  accessToken: parseString(json['access_token']),
+  refreshToken: parseString(json['refresh_token']),
   user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
 );
 

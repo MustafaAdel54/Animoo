@@ -1,6 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-enum VerificationStatus { initial, submitting, success, failure }
+enum VerificationStatus {
+  initial,
+  submitting,
+  resending,
+  success,
+  failure,
+  resendSuccess,
+}
 
 class VerificationState extends Equatable {
   final String code;

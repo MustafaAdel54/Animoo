@@ -1,22 +1,25 @@
-// "statusCode": 201,
-//  "message": "Signup successful!",
-// "alert": "We send verfication code to your email",
-// "user": {
-// "id": 1,
-//         "first_name": "ahmed",
-//         "last_name": "elsaid",
-//         "email": "ahmed122727727@gmail.com",
-//         "phone": "201001398831",
-//         "image_path": "http://localhost:8000/api/uploads/1749539458120.png",
-//         "is_verified": "false"
 import 'package:json_annotation/json_annotation.dart';
 
 part 'auth_response_model.g.dart';
 
-@JsonSerializable(createJsonSchema: true)
+int parseToInt(dynamic value) {
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
+}
+
+String parseString(dynamic value) {
+  if (value == null) return '';
+  return value.toString();
+}
+
+@JsonSerializable()
 class AuthResponseModel {
+  @JsonKey(fromJson: parseToInt)
   final int statusCode;
+  @JsonKey(fromJson: parseString)
   final String message;
+  @JsonKey(fromJson: parseString)
   final String alert;
   final UserModel user;
 
@@ -33,18 +36,21 @@ class AuthResponseModel {
   Map<String, dynamic> toJson() => _$AuthResponseModelToJson(this);
 }
 
-@JsonSerializable(createJsonSchema: true)
+@JsonSerializable()
 class UserModel {
+  @JsonKey(fromJson: parseToInt)
   final int id;
-  @JsonKey(name: 'first_name')
+  @JsonKey(name: 'first_name', fromJson: parseString)
   final String firstName;
-  @JsonKey(name: 'last_name')
+  @JsonKey(name: 'last_name', fromJson: parseString)
   final String lastName;
+  @JsonKey(fromJson: parseString)
   final String phone;
+  @JsonKey(fromJson: parseString)
   final String email;
-  @JsonKey(name: 'image_path')
+  @JsonKey(name: 'image_path', fromJson: parseString)
   final String imagePath;
-  @JsonKey(name: 'is_verified')
+  @JsonKey(name: 'is_verified', fromJson: parseString)
   final String isVerified;
 
   UserModel({

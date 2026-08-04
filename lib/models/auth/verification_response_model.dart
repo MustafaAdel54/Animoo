@@ -5,11 +5,13 @@ part 'verification_response_model.g.dart';
 
 @JsonSerializable()
 class VerificationResponseModel {
+  @JsonKey(fromJson: parseToInt)
   final int statusCode;
+  @JsonKey(fromJson: parseString)
   final String message;
-  @JsonKey(name: 'access_token')
+  @JsonKey(name: 'access_token', fromJson: parseString)
   final String accessToken;
-  @JsonKey(name: 'refresh_token')
+  @JsonKey(name: 'refresh_token', fromJson: parseString)
   final String refreshToken;
   final UserModel user;
 

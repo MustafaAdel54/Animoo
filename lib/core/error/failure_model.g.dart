@@ -7,8 +7,8 @@ part of 'failure_model.dart';
 // **************************************************************************
 
 FailureModel _$FailureModelFromJson(Map<String, dynamic> json) => FailureModel(
-  statusCode: (json['statusCode'] as num).toInt(),
-  error: (json['error'] as List<dynamic>).map((e) => e as String).toList(),
+  statusCode: _parseStatusCode(json['statusCode']),
+  error: _parseError(json['error']),
 );
 
 Map<String, dynamic> _$FailureModelToJson(FailureModel instance) =>

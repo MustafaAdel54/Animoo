@@ -68,6 +68,21 @@ class AuthRepository {
     }
   }
 
+  /// Resends a new verification code to the user's email.
+  Future<void> resendVerificationCode({required String email}) async {
+    final result = await AuthApi().resendVerificationCode(email: email);
+
+    result.fold(
+      (failure) => throw ServerException(
+        message: failure.error.isNotEmpty
+            ? failure.error.join('\n')
+            : 'Failed to resend verification code.',
+        data: {},
+      ),
+      (_) {}, // success — let the cubit emit resendSuccess
+    );
+  }
+
   /// Mock method: Signs in with email and password. Simulated with a delay.
   Future<void> signIn({required String email, required String password}) async {
     // Simulate network delay
