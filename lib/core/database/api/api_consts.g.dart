@@ -10,7 +10,7 @@ part of 'api_consts.dart';
 // ignore_for_file: type=lint
 // generated_from: .env
 final class _ApiConsts {
-  static const String baseUrl = 'http://192.168.1.26:8000';
+  static const String baseUrl = 'http://192.168.1.9:8000';
 
   static const String signUpEndPoint = '/api/signup';
 
@@ -18,4 +18,6 @@ final class _ApiConsts {
 
   static const String newVerificationCodeEndPoint =
       '/api/create_new_verfication_code';
+
+  static const String loginEndPoint = '/api/login';
 }

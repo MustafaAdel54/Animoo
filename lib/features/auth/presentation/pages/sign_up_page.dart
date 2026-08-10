@@ -126,8 +126,11 @@ class _SignUpViewState extends State<_SignUpView> {
               listener: (context, state) {
                 if (state.status == SignUpStatus.success) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Account created! Please verify your email.'),
+                    SnackBar(
+                      content: Text(
+                        'Account created! Please verify your email.',
+                      ),
+                      backgroundColor: AppColors.validationPass,
                     ),
                   );
                   context.go(

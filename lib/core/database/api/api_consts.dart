@@ -14,4 +14,6 @@ abstract class ApiConsts {
   @EnviedField(varName: 'NEW_VERIFICATION_CODE_ENDPOINT')
   static const String newVerificationCodeEndPoint =
       _ApiConsts.newVerificationCodeEndPoint;
+  @EnviedField(varName: 'LOGIN_ENDPOINT')
+  static const String loginEndPoint = _ApiConsts.loginEndPoint;
 }

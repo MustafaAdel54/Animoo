@@ -23,12 +23,7 @@ class AuthApi {
     } on ServerException catch (e) {
       return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
     } catch (e) {
-      return Left(
-        FailureModel(
-          statusCode: 1000,
-          error: [e.toString()],
-        ),
-      );
+      return Left(FailureModel(statusCode: 1000, error: [e.toString()]));
     }
   }
 
@@ -46,12 +41,7 @@ class AuthApi {
     } on ServerException catch (e) {
       return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
     } catch (e) {
-      return Left(
-        FailureModel(
-          statusCode: 1000,
-          error: [e.toString()],
-        ),
-      );
+      return Left(FailureModel(statusCode: 1000, error: [e.toString()]));
     }
   }
 
@@ -68,12 +58,25 @@ class AuthApi {
     } on ServerException catch (e) {
       return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
     } catch (e) {
-      return Left(
-        FailureModel(
-          statusCode: 1000,
-          error: [e.toString()],
-        ),
+      return Left(FailureModel(statusCode: 1000, error: [e.toString()]));
+    }
+  }
+
+  Future<Either<FailureModel, VerificationResponseModel>> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      DioServices dioServices = getIt.dioService;
+      var res = await dioServices.get(
+        path: ApiConsts.loginEndPoint,
+        queryParameter: {'email': email, 'password': password},
       );
+      return Right(VerificationResponseModel.fromJson(res));
+    } on ServerException catch (e) {
+      return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
+    } catch (e) {
+      return Left(FailureModel(statusCode: 1000, error: [e.toString()]));
     }
   }
 }

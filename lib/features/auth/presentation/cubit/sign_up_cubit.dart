@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:animoo/core/error/server_exception.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../features/auth/data/repositories/auth_repository.dart';
+import '../../../../data/auth_repository.dart';
 import 'sign_up_state.dart';
 
 class SignUpCubit extends Cubit<SignUpState> {
@@ -44,10 +44,7 @@ class SignUpCubit extends Cubit<SignUpState> {
       emit(state.copyWith(status: SignUpStatus.success));
     } on ServerException catch (e) {
       emit(
-        state.copyWith(
-          status: SignUpStatus.failure,
-          errorMessage: e.message,
-        ),
+        state.copyWith(status: SignUpStatus.failure, errorMessage: e.message),
       );
     }
   }

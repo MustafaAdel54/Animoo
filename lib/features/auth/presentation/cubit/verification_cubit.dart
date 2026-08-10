@@ -1,7 +1,7 @@
 import 'package:animoo/core/error/server_exception.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../features/auth/data/repositories/auth_repository.dart';
+import '../../../../data/auth_repository.dart';
 import 'verification_state.dart';
 
 class VerificationCubit extends Cubit<VerificationState> {

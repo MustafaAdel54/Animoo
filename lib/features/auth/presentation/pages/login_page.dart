@@ -61,9 +61,12 @@ class _LoginViewState extends State<_LoginView> {
                     listener: (context, state) {
                       if (state.status == LoginStatus.success) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Login Successful!')),
+                          SnackBar(
+                            content: Text('Login Successful!'),
+                            backgroundColor: AppColors.validationPass,
+                          ),
                         );
-                        // context.go('/home'); // TODO: Add go_router navigation
+                        context.go('/home');
                       } else if (state.status == LoginStatus.failure &&
                           state.errorMessage != null) {
                         ScaffoldMessenger.of(context).showSnackBar(

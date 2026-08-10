@@ -120,7 +120,10 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
             listener: (context, state) {
               if (state.status == VerificationStatus.success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Verification successful!')),
+                  SnackBar(
+                    content: Text('Verification successful!'),
+                    backgroundColor: AppColors.validationPass,
+                  ),
                 );
                 context.go(AppRouter.home);
               } else if (state.status == VerificationStatus.resendSuccess) {
