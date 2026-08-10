@@ -83,10 +83,29 @@ class AuthRepository {
     );
   }
 
-  /// Mock method: Signs in with email and password. Simulated with a delay.
   Future<void> signIn({required String email, required String password}) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
+    final result = await AuthApi().signIn(email: email, password: password);
+
+    // Fold: throw ServerException on failure so the cubit reads .message directly.
+    result.fold(
+      (failure) => throw ServerException(
+        message: failure.error.isNotEmpty
+            ? failure.error.join('\n')
+            : 'Login Failed.',
+        data: {},
+      ),
+      (_) {}, // success — token storage handled below
+    );
+
+    // Store tokens securely (outside fold to properly await)
+    if (result.isRight()) {
+      final response = result.getOrElse(() => throw Exception('unreachable'));
+      final tokenStorage = getIt.tokenStorageService;
+      await tokenStorage.saveTokens(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      );
+    }
   }
 
   /// Mock method: Sends a password reset email to the specified address. Simulated with a delay.
