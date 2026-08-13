@@ -62,8 +62,10 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
             child: BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
               listener: (context, state) {
                 if (state.status == ForgotPasswordStatus.success) {
-                  // Navigate to Create New Password page directly
-                  context.push(AppRouter.createNewPassword);
+                  // Navigate to OTP verification page to verify the code
+                  context.push(
+                    '${AppRouter.otpVerification}?email=${Uri.encodeComponent(state.email)}&source=forgot-password',
+                  );
                 } else if (state.status == ForgotPasswordStatus.failure &&
                     state.errorMessage != null) {
                   ScaffoldMessenger.of(context).showSnackBar(

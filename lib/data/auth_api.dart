@@ -79,4 +79,44 @@ class AuthApi {
       return Left(FailureModel(statusCode: 1000, error: [e.toString()]));
     }
   }
+
+  Future<Either<FailureModel, Map<String, dynamic>>> forgetPassword({
+    required String email,
+  }) async {
+    try {
+      DioServices dioServices = getIt.dioService;
+      var res = await dioServices.post(
+        path: ApiConsts.forgetPasswordEndPoint,
+        body: {'email': email},
+      );
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
+    } catch (e) {
+      return Left(FailureModel(statusCode: 1000, error: [e.toString()]));
+    }
+  }
+
+  Future<Either<FailureModel, VerificationResponseModel>> createNewPassword({
+    required String email,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    try {
+      DioServices dioServices = getIt.dioService;
+      var res = await dioServices.post(
+        path: ApiConsts.createNewPasswordEndPoint,
+        body: {
+          'email': email,
+          'password': password,
+          'confirmPassword': confirmPassword,
+        },
+      );
+      return Right(VerificationResponseModel.fromJson(res));
+    } on ServerException catch (e) {
+      return Left(FailureModel.fromJson(Map<String, dynamic>.from(e.data)));
+    } catch (e) {
+      return Left(FailureModel(statusCode: 1000, error: [e.toString()]));
+    }
+  }
 }

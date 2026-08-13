@@ -39,12 +39,19 @@ class SignUpCubit extends Cubit<SignUpState> {
         email: state.email,
         phone: state.phone,
         password: state.password,
-        image: state.image!,
+        image: state.image,
       );
       emit(state.copyWith(status: SignUpStatus.success));
     } on ServerException catch (e) {
       emit(
         state.copyWith(status: SignUpStatus.failure, errorMessage: e.message),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: SignUpStatus.failure,
+          errorMessage: 'An unexpected error occurred.',
+        ),
       );
     }
   }

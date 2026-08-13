@@ -19,24 +19,24 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
     emit(state.copyWith(status: ForgotPasswordStatus.submitting));
 
     try {
-      final isRegistered = await _authRepository.isEmailRegistered(state.email);
-      if (!isRegistered) {
-        emit(
-          state.copyWith(
-            status: ForgotPasswordStatus.failure,
-            errorMessage: 'This email is not signed up before.',
-          ),
-        );
-        return;
-      }
+      // final isRegistered = await _authRepository.isEmailRegistered(state.email);
+      // if (!isRegistered) {
+      //   emit(
+      //     state.copyWith(
+      //       status: ForgotPasswordStatus.failure,
+      //       errorMessage: 'This email is not signed up before.',
+      //     ),
+      //   );
+      //   return;
+      // }
 
-      await _authRepository.sendPasswordResetEmail(email: state.email);
+      await _authRepository.forgetPassword(email: state.email);
       emit(state.copyWith(status: ForgotPasswordStatus.success));
     } catch (e) {
       emit(
         state.copyWith(
           status: ForgotPasswordStatus.failure,
-          errorMessage: 'An unexpected error occurred. Please try again.',
+          errorMessage: e.toString(),
         ),
       );
     }

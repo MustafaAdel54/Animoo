@@ -1,14 +1,15 @@
+import 'package:animoo/core/constants/animation_constants.dart';
+import 'package:animoo/core/router/app_router.dart';
+import 'package:animoo/core/theme/app_colors.dart';
+import 'package:animoo/core/theme/app_fonts.dart';
+import 'package:animoo/core/utils/validators.dart';
+import 'package:animoo/shared/widgets/custom_button.dart';
+import 'package:animoo/shared/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/app_router.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_fonts.dart';
-import '../../../../core/utils/validators.dart';
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/custom_text_field.dart';
 import '../cubit/login_cubit.dart';
 import '../cubit/login_state.dart';
 
@@ -54,7 +55,6 @@ class _LoginViewState extends State<_LoginView> {
               hasScrollBody: false,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18.w),
-                // From Figma left offset
                 child: Form(
                   key: _formKey,
                   child: BlocConsumer<LoginCubit, LoginState>(
@@ -66,7 +66,7 @@ class _LoginViewState extends State<_LoginView> {
                             backgroundColor: AppColors.validationPass,
                           ),
                         );
-                        context.go('/home');
+                        context.go(AppRouter.home);
                       } else if (state.status == LoginStatus.failure &&
                           state.errorMessage != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -82,28 +82,37 @@ class _LoginViewState extends State<_LoginView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(height: 50.h),
-                          Image.asset(
-                            'assets/images/logo.png',
-                            width: 72.w,
-                            height: 93.h,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                width: 72.w,
-                                height: 72.h,
-                                color: Colors.grey[300],
-                                child: const Icon(
-                                  Icons.image,
-                                  color: Colors.grey,
-                                ),
+                          Hero(
+                            tag: AnimationConstants.appLogoHeroTag,
+                            createRectTween: (begin, end) {
+                              return MaterialRectArcTween(
+                                begin: begin,
+                                end: end,
                               );
                             },
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              width: 72.w,
+                              height: 93.h,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 72.w,
+                                  height: 72.h,
+                                  color: AppColors.surfaceFill,
+                                  child: const Icon(
+                                    Icons.image,
+                                    color: AppColors.textSubtitle,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                           SizedBox(height: 10.h),
 
                           // Log In Title
                           Text('Log In', style: AppFonts.loginTitle),
                           SizedBox(height: 0.h),
-                          // The title's line-height bounding box naturally provides this gap
 
                           // Email Field
                           CustomTextField(
@@ -112,7 +121,6 @@ class _LoginViewState extends State<_LoginView> {
                             controller: _emailController,
                             validator: AppValidators.validateEmail,
                           ),
-                          // Listen to changes
                           Builder(
                             builder: (context) {
                               _emailController.addListener(() {
@@ -171,10 +179,7 @@ class _LoginViewState extends State<_LoginView> {
                             text: 'Log In',
                             isLoading: state.status == LoginStatus.submitting,
                             onPressed: () {
-                              // Unfocus the keyboard
                               FocusScope.of(context).unfocus();
-
-                              // Trigger Form Validation
                               if (_formKey.currentState!.validate()) {
                                 context.read<LoginCubit>().submit();
                               }
@@ -208,7 +213,6 @@ class _LoginViewState extends State<_LoginView> {
                           ),
 
                           SizedBox(height: 20.h),
-                          // Bottom padding
                         ],
                       );
                     },

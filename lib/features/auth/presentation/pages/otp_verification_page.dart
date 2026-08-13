@@ -16,22 +16,24 @@ import '../cubit/verification_state.dart';
 
 class OtpVerificationPage extends StatelessWidget {
   final String email;
+  final String source;
 
-  const OtpVerificationPage({super.key, required this.email});
+  const OtpVerificationPage({super.key, required this.email, this.source = 'signup'});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => VerificationCubit(email: email),
-      child: _OtpVerificationView(email: email),
+      child: _OtpVerificationView(email: email, source: source),
     );
   }
 }
 
 class _OtpVerificationView extends StatefulWidget {
   final String email;
+  final String source;
 
-  const _OtpVerificationView({required this.email});
+  const _OtpVerificationView({required this.email, required this.source});
 
   @override
   State<_OtpVerificationView> createState() => _OtpVerificationViewState();
@@ -125,7 +127,13 @@ class _OtpVerificationViewState extends State<_OtpVerificationView> {
                     backgroundColor: AppColors.validationPass,
                   ),
                 );
-                context.go(AppRouter.home);
+                if (widget.source == 'forgot-password') {
+                  context.go(
+                    '${AppRouter.createNewPassword}?email=${Uri.encodeComponent(widget.email)}',
+                  );
+                } else {
+                  context.go(AppRouter.home);
+                }
               } else if (state.status == VerificationStatus.resendSuccess) {
                 _pinController.clear();
                 setState(() => _secondsLeft = 59);

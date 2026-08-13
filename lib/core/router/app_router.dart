@@ -45,13 +45,17 @@ class AppRouter {
         name: 'otp-verification',
         builder: (context, state) {
           final email = state.uri.queryParameters['email'] ?? '';
-          return OtpVerificationPage(email: email);
+          final source = state.uri.queryParameters['source'] ?? 'signup';
+          return OtpVerificationPage(email: email, source: source);
         },
       ),
       GoRoute(
         path: createNewPassword,
         name: 'create-new-password',
-        builder: (context, state) => const CreateNewPasswordPage(),
+        builder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
+          return CreateNewPasswordPage(email: email);
+        },
       ),
       GoRoute(
         path: home,

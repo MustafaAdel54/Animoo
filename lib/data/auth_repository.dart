@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+
 import 'package:animoo/core/error/server_exception.dart';
 import 'package:animoo/core/service/get_it_service.dart';
 import 'package:animoo/core/utils/extensions.dart';
@@ -17,8 +20,20 @@ class AuthRepository {
     required String email,
     required String phone,
     required String password,
-    required File image,
+    File? image,
   }) async {
+    // If no image provided, load the default user_icon from bundled assets
+    final File profileImage;
+    if (image != null) {
+      profileImage = image;
+    } else {
+      final byteData = await rootBundle.load('assets/images/user_icon.png');
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/user_icon.png');
+      await tempFile.writeAsBytes(byteData.buffer.asUint8List());
+      profileImage = tempFile;
+    }
+
     final result = await AuthApi().signup(
       SignUpRequestModel(
         firstName: firstName,
@@ -26,7 +41,7 @@ class AuthRepository {
         email: email,
         phone: phone,
         password: password,
-        image: image,
+        image: profileImage,
       ),
     );
 
@@ -94,7 +109,7 @@ class AuthRepository {
             : 'Login Failed.',
         data: {},
       ),
-      (_) {}, // success — token storage handled below
+      (_) {},
     );
 
     // Store tokens securely (outside fold to properly await)
@@ -109,19 +124,58 @@ class AuthRepository {
   }
 
   /// Mock method: Sends a password reset email to the specified address. Simulated with a delay.
-  Future<void> sendPasswordResetEmail({required String email}) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> forgetPassword({required String email}) async {
+    final result = await AuthApi().forgetPassword(email: email);
+    result.fold(
+      (failure) => throw ServerException(
+        message: failure.error.isNotEmpty
+            ? failure.error.join('\n')
+            : 'error in sending code',
+        data: {},
+      ),
+      (_) {},
+    );
+  }
+
+  Future<void> createNewPassword({
+    required String email,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    final result = await AuthApi().createNewPassword(
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+    );
+    result.fold(
+      (failure) => throw ServerException(
+        message: failure.error.isNotEmpty
+            ? failure.error.join('\n')
+            : 'Failed to create new password.',
+        data: {},
+      ),
+      (_) {}, // success — token storage handled below
+    );
+
+    // Store tokens securely (outside fold to properly await)
+    if (result.isRight()) {
+      final response = result.getOrElse(() => throw Exception('unreachable'));
+      final tokenStorage = getIt.tokenStorageService;
+      await tokenStorage.saveTokens(
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      );
+    }
   }
 
   /// Mock method: Checks if an email is already registered. Simulated with a delay.
-  Future<bool> isEmailRegistered(String email) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    // Always returning true for the mock to allow the reset password flow to proceed,
-    // or you could add specific logic to toggle this for testing.
-    return true;
-  }
+  // Future<bool> isEmailRegistered(String email) async {
+  //   // Simulate network delay
+  //   await Future.delayed(const Duration(seconds: 1));
+  //   // Always returning true for the mock to allow the reset password flow to proceed,
+  //   // or you could add specific logic to toggle this for testing.
+  //   return true;
+  // }
 
   /// Mock method: Signs out the current user.
   Future<void> signOut() async {
